@@ -20,5 +20,5 @@ from .views import Sub
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", Sub.as_view())
+    path("main/", Sub.as_view())
 ]
