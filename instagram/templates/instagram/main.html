@@ -18,6 +18,8 @@
         html,
         body {
             min-width: 1000px;
+            min-height: 100vh;
+            background-color: #fafafa;
         }
 
         .logo {
@@ -30,6 +32,10 @@
                 'wght'400,
                 'GRAD'0,
                 'opsz'48
+        }
+
+        .bg-light {
+            background-color: #fff !important;
         }
 
         .container-fluid {
@@ -56,6 +62,10 @@
         .form-control:focus {
             box-shadow: none;
             border-color: #ced4da;
+        }
+
+        .feedbx+.feedbx {
+            margin-top: 50px;
         }
     </style>
 
@@ -90,21 +100,19 @@
     </nav>
 
 
-    <div
-        style="display: flex; position: relative; justify-content: center; padding-top: 65.59px; gap: 10px; background-color: #fafafa;">
-        <div style="width: 600px; height: 1000px;">
-            <div style="border: 1px solid gray; background-color: white;">
+    <div style="display: flex; position: relative; justify-content: center; padding-top: 80px; gap: 10px;">
+        <div style="width: 600px;">
+            {% comment %} 왼쪽 피드 {% endcomment %}
+            {% for feed in feeds %}
+            <div class="feedbx" style="border: 1px solid gray; background-color: white;">
                 <div style="display: flex; align-items: center; padding: 10px 20px; box-sizing: border-box;">
                     <div class="box">
-                        <img class="profile"
-                            src="https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg"
-                            alt="이미지">
+                        <img class="profile" src="{{feed.profile_image}}" alt="이미지">
                     </div>
-                    <div>zonny</div>
+                    <div>{{feed.user_id}}</div>
                 </div>
                 <div>
-                    <img src="https://res.klook.com/image/upload/Mobile/City/n9sn4fajwa1skldmdeex.jpg" alt="이미지"
-                        style="width: 100%;">
+                    <img src="{{feed.image}}" alt="이미지" style="width: 100%;">
                 </div>
                 <div style="display: flex; justify-content: space-between; padding: 5px 20px; box-sizing: border-box;">
                     <div>
@@ -125,8 +133,8 @@
                     </div>
                 </div>
                 <div style="padding: 0 20px;box-sizing: border-box;">
-                    <div>춘식이 <b>외 19명</b>이 좋아합니다.</div>
-                    <div style="font-size: 18px;"><b>zonny</b> 런던 빅벤</div>
+                    <div>춘식이 <b>외 {{feed.like_count}}명</b>이 좋아합니다.</div>
+                    <div style="font-size: 18px;"><b>{{feed.user_id}}</b> {{feed.content}}</div>
                     <div><b>aaaa</b> 런던 좋지, 빅벤 어서오고.</div>
                     <div><b>bbbb</b> 손흥민</div>
                 </div>
@@ -134,8 +142,103 @@
                     <input type="text" class="form-control" placeholder="댓글 달기..." style="outline: none;">
                 </div>
             </div>
+            {% endfor %}
         </div>
-        <div style="position: sticky; top: 65.59px; width: 400px; height: 500px;">오른쪽</div>
+        {% comment %} 오른쪽 피드 /////////////////////////////{% endcomment %}
+        <div
+            style="position: sticky; top: 65.59px; width: 400px; height: 500px; padding: 10px 20px; box-sizing: border-box;">
+            <div style="display: flex; align-items: center;">
+                <div class="box" style="width: 70px; height: 70px;">
+                    <img class="profile"
+                        src="https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg" alt="이미지">
+                </div>
+                <div>
+                    <div><b>zonny</b></div>
+                    <div style="color: grey;">name</div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin: 10px auto;">
+                <span style="font-weight: bold; color: grey;">회원님을 위한 추천</span>
+                <a href="###" style="font-weight: bold; color: #000; text-decoration: none;">모두보기</a>
+            </div>
+            <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
+                <div style="display: flex; align-items: center;">
+                    <div class="box" style="width: 45px; height: 45px;">
+                        <img class="profile"
+                            src="https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg"
+                            alt="이미지">
+                    </div>
+                    <div style="font-size: 14px;">
+                        <div><b>aaaa</b></div>
+                        <div style="color: grey;">같은 사람을 팔로우합니다</div>
+                    </div>
+                </div>
+                <a href="#" style="text-decoration: none; font-weight: bold;font-size: 14px;">팔로우</a>
+            </div>
+            <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
+                <div style="display: flex; align-items: center;">
+                    <div class="box" style="width: 45px; height: 45px;">
+                        <img class="profile"
+                            src="https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg"
+                            alt="이미지">
+                    </div>
+                    <div style="font-size: 14px;">
+                        <div><b>aaaa</b></div>
+                        <div style="color: grey;">같은 사람을 팔로우합니다</div>
+                    </div>
+                </div>
+                <a href="#" style="text-decoration: none; font-weight: bold;font-size: 14px;">팔로우</a>
+            </div>
+            <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
+                <div style="display: flex; align-items: center;">
+                    <div class="box" style="width: 45px; height: 45px;">
+                        <img class="profile"
+                            src="https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg"
+                            alt="이미지">
+                    </div>
+                    <div style="font-size: 14px;">
+                        <div><b>aaaa</b></div>
+                        <div style="color: grey;">같은 사람을 팔로우합니다</div>
+                    </div>
+                </div>
+                <a href="#" style="text-decoration: none; font-weight: bold;font-size: 14px;">팔로우</a>
+            </div>
+            <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
+                <div style="display: flex; align-items: center;">
+                    <div class="box" style="width: 45px; height: 45px;">
+                        <img class="profile"
+                            src="https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg"
+                            alt="이미지">
+                    </div>
+                    <div style="font-size: 14px;">
+                        <div><b>aaaa</b></div>
+                        <div style="color: grey;">같은 사람을 팔로우합니다</div>
+                    </div>
+                </div>
+                <a href="#" style="text-decoration: none; font-weight: bold;font-size: 14px;">팔로우</a>
+            </div>
+            <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
+                <div style="display: flex; align-items: center;">
+                    <div class="box" style="width: 45px; height: 45px;">
+                        <img class="profile"
+                            src="https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg"
+                            alt="이미지">
+                    </div>
+                    <div style="font-size: 14px;">
+                        <div><b>aaaa</b></div>
+                        <div style="color: grey;">같은 사람을 팔로우합니다</div>
+                    </div>
+                </div>
+                <a href="#" style="text-decoration: none; font-weight: bold;font-size: 14px;">팔로우</a>
+            </div>
+            <div style="margin-top: 50px; color: grey; font-size: 14px;">
+                소개 도움말 홍보센터 api <br>
+                개인정보처리방침 약관 위치 인기 계정 해시태그 언어
+            </div>
+            <div style="margin-top: 20px; color: grey; font-size: 14px;">
+                2023 INSTAGRAM FROM FACEBOOK
+            </div>
+        </div>
     </div>
 
 
