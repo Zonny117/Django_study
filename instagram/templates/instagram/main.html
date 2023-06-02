@@ -11,8 +11,9 @@
         integrity="sha384-DOXMLfHhQkvFFp+rWTZwVlPVqdIhpDVYT9csOnHSgWQWPX0v5MCGtjCJbY6ERspU" crossorigin="anonymous">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <title>hello</title>
+    <title>Instagram</title>
 
+    {% load static %}
 
     <style>
         html,
@@ -224,7 +225,7 @@
                     <div>{{feed.user_id}}</div>
                 </div>
                 <div>
-                    <img src="{{feed.image}}" alt="이미지" style="width: 100%;">
+                    <img src="{% get_media_prefix %}{{feed.image}}" alt="이미지" style="width: 100%;">
                 </div>
                 <div style="display: flex; justify-content: space-between; padding: 5px 20px; box-sizing: border-box;">
                     <div>
@@ -353,6 +354,7 @@
         </div>
     </div>
 
+    <!-- 사진 업로드 //////////////////////////// -->
     <div id="upload_container">
         <div id="image_modal">
             <a href="###" class="btn_close">
@@ -364,9 +366,9 @@
             <div class="cont">
                 <div class="image_area"></div>
                 <div class="text_area">
-                    <textarea name="" id="" placeholder="내용을 입력하세요." resize="none" class="form-control"
+                    <textarea id="feed_content" placeholder="내용을 입력하세요." resize="none" class="form-control"
                         id="exampleFormControlTextarea1"></textarea>
-                    <button class="btn btn-primary">공유하기</button>
+                    <button id="btn_share" class="btn btn-primary">공유하기</button>
                 </div>
             </div>
         </div>
@@ -416,12 +418,14 @@
             }
         }
 
+        var files;
+
         function uploadFiles(e) {
             e.stopPropagation();
             e.preventDefault();
 
             e.dataTransfer = e.originalEvent.dataTransfer;
-            var files = e.target.files || e.dataTransfer.files;
+            files = e.target.files || e.dataTransfer.files;
 
             if (files.length > 1) {
                 alert('하나만 올려라.');
@@ -440,6 +444,43 @@
                 return;
             }
         }
+
+        $("#btn_share").on('click', function () {
+
+            let file = files[0];
+            let image = files[0].name;
+            let content = $("#feed_content").val();
+            let user_id = "zonny";
+            let profile_image = "https://blog.kakaocdn.net/dn/0mySg/btqCUccOGVk/nQ68nZiNKoIEGNJkooELF1/img.jpg";
+
+            let formData = new FormData();
+
+            formData.append('file', file);
+            formData.append('file', image);
+            formData.append('file', content);
+            formData.append('file', user_id);
+            formData.append('file', profile_image);
+
+            console.log(formData);
+
+            $.ajax({
+                url: "/content/upload/",
+                data: formData,
+                method: 'post',
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(`성공`);
+                },
+                error: function (request, status, error) {
+                    console.log('에러');
+                },
+                complete: function () {
+                    console.log("완료");
+                    location.replace("/main")
+                },
+            });
+        });
     </script>
 </body>
 
