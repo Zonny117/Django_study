@@ -14,15 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from content.views import Main, UploadView
+from django.urls import include, path
+from content.views import Main
 from django.conf.urls.static import static
 from instagram import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("main/", Main.as_view()),
-    path("content/upload/", UploadView.as_view()),
+    # 다른 앱 폴더에 있는 urls를 include 함으로써 앱단위로 파일을 관리할 수 있다.
+    path("content/", include("content.urls")),
+    path("user/", include("user.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

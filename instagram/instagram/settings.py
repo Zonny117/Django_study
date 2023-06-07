@@ -126,7 +126,11 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
+# 미디어 파일 경로명 설정
 MEDIA_URL = "/meida/"
 
+# 기본 도메인 + 미디어 경로 설정
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# 커스텀 유저 모델 사용
+AUTH_USER_MODEL = "user.User"
