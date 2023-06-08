@@ -4,6 +4,7 @@ from rest_framework.views import Response
 from rest_framework.views import APIView
 from .models import Feed
 from instagram.settings import MEDIA_ROOT
+from user.models import User
 import os
 
 
@@ -14,10 +15,28 @@ class Main(APIView):
         # 최신순으로 데이터를 가져오기 위해 order_by() 사용, 아이디를 기준으로 역순.
         feed_list = Feed.objects.all().order_by("-id")
 
+        # 세션에 담겨있는 이메일을 읽어옴
+        print("로그인 이메일: " + request.session["email"])
+
+        email = request.session["email"]
+
+        # 이메일 정보가 없으면 로그인창으로
+        if email is None:
+            return render(request, "user/login/")
+
+        user = User.objects.filter(email=email).first()
+
+        # 유저정보가 없으면 로그인 창으로
+        if user is None:
+            return render(request, "user/login/")
+
         return render(
             request,
             "instagram/main.html",
-            context=dict(feeds=feed_list),
+            context=dict(
+                feeds=feed_list,
+                user=user,
+            ),
         )
 
 
