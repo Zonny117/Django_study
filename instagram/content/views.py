@@ -14,21 +14,21 @@ class Main(APIView):
         # select * from content_feed; 쿼리문과 같음, 데이터 양이 많을 경우 이건 위험한 코드. where 조건문을 같이 써야함
         # 최신순으로 데이터를 가져오기 위해 order_by() 사용, 아이디를 기준으로 역순.
         feed_list = Feed.objects.all().order_by("-id")
+        # 이메일 데이터가 없을 경우, None 처리
+        email = request.session.get("email", None)
 
         # 세션에 담겨있는 이메일을 읽어옴
-        print("로그인 이메일: " + request.session["email"])
-
-        email = request.session["email"]
+        print(f"로그인 이메일 : {email}")
 
         # 이메일 정보가 없으면 로그인창으로
         if email is None:
-            return render(request, "user/login/")
+            return render(request, "user/login.html")
 
         user = User.objects.filter(email=email).first()
 
         # 유저정보가 없으면 로그인 창으로
         if user is None:
-            return render(request, "user/login/")
+            return render(request, "user/login.html")
 
         return render(
             request,
@@ -68,3 +68,24 @@ class UploadView(APIView):
         )
 
         return Response(status=200)
+
+
+class Profile(APIView):
+    def get(self, request):
+        email = request.session.get("email", None)
+
+        if email is None:
+            return render(request, "user/login.html")
+
+        user = User.objects.filter(email=email).first()
+
+        if user is None:
+            return render(request, "user/login.html")
+
+        return render(
+            request,
+            "content/profile.html",
+            context=dict(
+                user=user,
+            ),
+        )

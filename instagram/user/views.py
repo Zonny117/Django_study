@@ -1,5 +1,10 @@
+import os
+from uuid import uuid4
 from django.shortcuts import render
 from rest_framework.views import APIView, Response
+
+from content.models import Feed
+from instagram.settings import MEDIA_ROOT
 from .models import User
 from django.contrib.auth.hashers import make_password
 
@@ -63,3 +68,37 @@ class Login(APIView):
             return Response(status=200)
         else:
             return Response(status=400, data=dict(message="이메일 혹은 비밀번호를 확인해주세요."))
+
+
+class Logout(APIView):
+    def get(self, request):
+        request.session.flush()
+        return render(request, "user/login.html")
+
+
+class UploadProfileImage(APIView):
+    def post(self, request):
+        file = request.FILES["file"]
+        uuid_name = uuid4().hex
+        save_path = os.path.join(MEDIA_ROOT, uuid_name)
+        with open(save_path, "wb+") as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+
+        profile_image = uuid_name
+        email = request.data.get("email")
+
+        user = User.objects.filter(email=email).first()
+
+        # 테이블 업데이트시 세이브 메소드를 실행시켜줘야 데이터베이스에 최종 반영된다.
+        user.profile_image = profile_image
+        user.save()
+
+        # 이전에 게시된 피드의 프로필 사진도 전부 변경하기 위해 for문 사용
+        feed_profile_image = Feed.objects.filter(user_id=user.nickname).all()
+
+        for feed in feed_profile_image:
+            feed.profile_image = profile_image
+            feed.save()
+
+        return Response(status=200)
