@@ -429,18 +429,12 @@
             let file = files[0];
             let image = files[0].name;
             let content = $("#feed_content").val();
-            let user_id = "{{user.nickname}}";
-            let profile_image = "{{user.profile_image}}";
 
             let formData = new FormData();
 
             formData.append('file', file);
             formData.append('file', image);
             formData.append('file', content);
-            formData.append('file', user_id);
-            formData.append('file', profile_image);
-
-            console.log(formData);
 
             $.ajax({
                 url: "/content/upload/",

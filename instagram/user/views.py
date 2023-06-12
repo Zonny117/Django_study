@@ -2,7 +2,6 @@ import os
 from uuid import uuid4
 from django.shortcuts import render
 from rest_framework.views import APIView, Response
-
 from content.models import Feed
 from instagram.settings import MEDIA_ROOT
 from .models import User
@@ -20,8 +19,6 @@ class Join(APIView):
         nickname = request.data.get("nickname", None)
         name = request.data.get("name", None)
         password = request.data.get("password", None)
-
-        print(email, nickname, name, password)
 
         # 유저 테이블 레코드 생성
         # 비밀번호의 경우, 암호화 처리를 하여 db에 저장해야한다.
@@ -93,12 +90,5 @@ class UploadProfileImage(APIView):
         # 테이블 업데이트시 세이브 메소드를 실행시켜줘야 데이터베이스에 최종 반영된다.
         user.profile_image = profile_image
         user.save()
-
-        # 이전에 게시된 피드의 프로필 사진도 전부 변경하기 위해 for문 사용
-        feed_profile_image = Feed.objects.filter(user_id=user.nickname).all()
-
-        for feed in feed_profile_image:
-            feed.profile_image = profile_image
-            feed.save()
 
         return Response(status=200)

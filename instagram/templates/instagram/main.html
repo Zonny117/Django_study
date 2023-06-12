@@ -198,19 +198,40 @@
             gap: 10px;
         }
 
-        .btn_home{
+        .btn_home {
             text-decoration: none;
             color: #000;
             width: 24px;
             height: 24px;
         }
-        
-        .btn_home:hover{
+
+        .btn_home:hover {
             color: #000;
         }
 
         .dropdown-menu li {
             text-align: left;
+        }
+
+        #reply_box {
+            position: relative;
+            padding: 0 20px 20px;
+            box-sizing: border-box;
+        }
+
+        #reply_box input {
+            padding-right: 50px;
+            box-sizing: border-box;
+        }
+
+        .btn_reply {
+            position: absolute;
+            top: 35%;
+            transform: translateY(-50%);
+            right: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            opacity: 0.5;
         }
     </style>
 
@@ -259,7 +280,7 @@
                     <div class="box">
                         <img class="profile" src="{% get_media_prefix %}{{feed.profile_image}}" alt="이미지">
                     </div>
-                    <div>{{feed.user_id}}</div>
+                    <div>{{feed.nickname}}</div>
                 </div>
                 <div>
                     <img src="{% get_media_prefix %}{{feed.image}}" alt="이미지" style="width: 100%;">
@@ -282,14 +303,18 @@
                         </span>
                     </div>
                 </div>
-                <div style="padding: 0 20px;box-sizing: border-box;">
+                <div class="feed_content_box" style="padding: 0 20px;box-sizing: border-box;">
                     <div>춘식이 <b>외 {{feed.like_count}}명</b>이 좋아합니다.</div>
-                    <div style="font-size: 18px;"><b>{{feed.user_id}}</b> {{feed.content}}</div>
-                    <div><b>aaaa</b> 런던 좋지, 빅벤 어서오고.</div>
-                    <div><b>bbbb</b> 손흥민</div>
+                    <div style="font-size: 18px; margin-bottom: 15px;"><b>{{feed.user_id}}</b>
+                        {{feed.content}}</div>
+                    {% for reply in feed.reply_list %}
+                    <div><b>{{reply.nickname}}</b> {{reply.reply_content}}</div>
+                    {% endfor %}
                 </div>
-                <div style="margin-top: 10px;">
-                    <input type="text" class="form-control" placeholder="댓글 달기..." style="outline: none;">
+                <div id="reply_box" style="margin-top: 10px;">
+                    <input id="reply_{{feed.id}}" type="text" class="form-control" placeholder="댓글 달기..."
+                        style="outline: none;">
+                    <a href="javascript:void(0)" class="btn_reply" data-feed-id="{{feed.id}}">게시</a>
                 </div>
             </div>
             {% endfor %}
@@ -313,10 +338,11 @@
             <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
                 <div style="display: flex; align-items: center;">
                     <div class="box" style="width: 45px; height: 45px;">
-                        <img class="profile" src="{% get_media_prefix %}{{user.profile_image}}" alt="이미지">
+                        <img class="profile"
+                            src="https://data.onnada.com/character/202211/3718766049_b2ac309d_kita2.jpg" alt="이미지">
                     </div>
                     <div style="font-size: 14px;">
-                        <div><b>aaaa</b></div>
+                        <div><b>키타 이쿠요</b></div>
                         <div style="color: grey;">같은 사람을 팔로우합니다</div>
                     </div>
                 </div>
@@ -325,10 +351,11 @@
             <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
                 <div style="display: flex; align-items: center;">
                     <div class="box" style="width: 45px; height: 45px;">
-                        <img class="profile" src="{% get_media_prefix %}{{user.profile_image}}" alt="이미지">
+                        <img class="profile" src="https://data.onnada.com/character/202210/3718766049_d364cbaa_ryo3.jpg"
+                            alt="이미지">
                     </div>
                     <div style="font-size: 14px;">
-                        <div><b>aaaa</b></div>
+                        <div><b>야마다 료</b></div>
                         <div style="color: grey;">같은 사람을 팔로우합니다</div>
                     </div>
                 </div>
@@ -337,10 +364,11 @@
             <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
                 <div style="display: flex; align-items: center;">
                     <div class="box" style="width: 45px; height: 45px;">
-                        <img class="profile" src="{% get_media_prefix %}{{user.profile_image}}" alt="이미지">
+                        <img class="profile"
+                            src="https://data.onnada.com/character/202210/3718766049_3f1397a1_hitori.jpg" alt="이미지">
                     </div>
                     <div style="font-size: 14px;">
-                        <div><b>aaaa</b></div>
+                        <div><b>고토 히토리</b></div>
                         <div style="color: grey;">같은 사람을 팔로우합니다</div>
                     </div>
                 </div>
@@ -349,22 +377,11 @@
             <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
                 <div style="display: flex; align-items: center;">
                     <div class="box" style="width: 45px; height: 45px;">
-                        <img class="profile" src="{% get_media_prefix %}{{user.profile_image}}" alt="이미지">
+                        <img class="profile"
+                            src="https://data.onnada.com/character/202211/3718766049_efd01d81_ijika4.jpg" alt="이미지">
                     </div>
                     <div style="font-size: 14px;">
-                        <div><b>aaaa</b></div>
-                        <div style="color: grey;">같은 사람을 팔로우합니다</div>
-                    </div>
-                </div>
-                <a href="#" style="text-decoration: none; font-weight: bold;font-size: 14px;">팔로우</a>
-            </div>
-            <div style="display: flex; align-items: center;justify-content: space-between; margin: 10px auto;">
-                <div style="display: flex; align-items: center;">
-                    <div class="box" style="width: 45px; height: 45px;">
-                        <img class="profile" src="{% get_media_prefix %}{{user.profile_image}}" alt="이미지">
-                    </div>
-                    <div style="font-size: 14px;">
-                        <div><b>aaaa</b></div>
+                        <div><b>이지치 니지카</b></div>
                         <div style="color: grey;">같은 사람을 팔로우합니다</div>
                     </div>
                 </div>
@@ -406,6 +423,40 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
     <script>
+        $(".btn_reply").on('click', function (e) {
+            let id = $(this).attr("data-feed-id");
+            let reply_id = `reply_${id}`;
+            let reply_content = $(`#${reply_id}`).val();
+
+            if (reply_content === "") {
+                alert("내용을 입력하세요.");
+                return;
+            }
+
+            $.ajax({
+                url: "/content/reply/",
+                method: 'post',
+                data: {
+                    feed_id: id,
+                    reply_content: reply_content,
+                },
+                success: function (data) {
+                    let content_box = e.target.closest(".feedbx").querySelector(".feed_content_box")
+                        .insertAdjacentHTML('beforeend',
+                            `<div><b>{{user.nickname}}</b> ${reply_content}</div>`);
+                    $(`#${reply_id}`).val('');
+                },
+                error: function (request, status, error) {
+                    console.log('에러');
+                },
+                complete: function () {
+                    console.log("완료");
+                },
+            });
+
+        });
+
+
         const add_box = document.querySelector(".add_box");
         const upload_modal = document.querySelector("#upload_container");
         const btn_close = document.querySelector(".btn_close");
@@ -476,18 +527,12 @@
             let file = files[0];
             let image = files[0].name;
             let content = $("#feed_content").val();
-            let user_id = "{{user.nickname}}";
-            let profile_image = "{{user.profile_image}}";
 
             let formData = new FormData();
 
             formData.append('file', file);
             formData.append('file', image);
             formData.append('file', content);
-            formData.append('file', user_id);
-            formData.append('file', profile_image);
-
-            console.log(formData);
 
             $.ajax({
                 url: "/content/upload/",
@@ -503,7 +548,7 @@
                 },
                 complete: function () {
                     console.log("완료");
-                    location.replace("/main")
+                    location.replace("/main");
                 },
             });
         });

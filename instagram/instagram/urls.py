@@ -21,6 +21,7 @@ from instagram import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", Main.as_view()),
     path("main/", Main.as_view()),
     # 다른 앱 폴더에 있는 urls를 include 함으로써 앱단위로 파일을 관리할 수 있다.
     path("content/", include("content.urls")),
