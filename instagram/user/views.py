@@ -91,4 +91,11 @@ class UploadProfileImage(APIView):
         user.profile_image = profile_image
         user.save()
 
+        # 프로필 사진 변경전 피드 게시물 전부에도 반영
+        feed_list = Feed.objects.filter(email=email).all()
+
+        for feed in feed_list:
+            feed.profile_image = profile_image
+            feed.save()
+
         return Response(status=200)

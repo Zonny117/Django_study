@@ -233,6 +233,31 @@
             font-weight: bold;
             opacity: 0.5;
         }
+
+        .ico_like {
+            color: red;
+            cursor: pointer;
+        }
+
+        .ico_bookmark {
+            cursor: pointer;
+        }
+
+        .ico_like.on {
+            font-variation-settings:
+                'FILL'1,
+                'wght'400,
+                'GRAD'0,
+                'opsz'48
+        }
+
+        .ico_bookmark.on {
+            font-variation-settings:
+                'FILL'1,
+                'wght'400,
+                'GRAD'0,
+                'opsz'48
+        }
     </style>
 
 </head>
@@ -275,7 +300,7 @@
         <div style="width: 600px;">
             {% comment %} 왼쪽 피드 {% endcomment %}
             {% for feed in feeds %}
-            <div class="feedbx" style="border: 1px solid gray; background-color: white;">
+            <div data-feed-id="{{feed.id}}" class="feedbx" style="border: 1px solid gray; background-color: white;">
                 <div style="display: flex; align-items: center; padding: 10px 20px; box-sizing: border-box;">
                     <div class="box">
                         <img class="profile" src="{% get_media_prefix %}{{feed.profile_image}}" alt="이미지">
@@ -287,25 +312,31 @@
                 </div>
                 <div style="display: flex; justify-content: space-between; padding: 5px 20px; box-sizing: border-box;">
                     <div>
-                        <span class="material-symbols-outlined">
+                        {% if feed.is_liked %}
+                        <span class="material-symbols-outlined ico_like on">
                             favorite
                         </span>
-                        <span class="material-symbols-outlined">
-                            mode_comment
+                        {% else %}
+                        <span class="material-symbols-outlined ico_like">
+                            favorite
                         </span>
-                        <span class="material-symbols-outlined">
-                            send
-                        </span>
+                        {% endif %}
                     </div>
                     <div>
-                        <span class="material-symbols-outlined">
+                        {% if feed.is_marked %}
+                        <span class="material-symbols-outlined ico_bookmark on">
                             bookmark
                         </span>
+                        {% else %}
+                        <span class="material-symbols-outlined ico_bookmark">
+                            bookmark
+                        </span>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="feed_content_box" style="padding: 0 20px;box-sizing: border-box;">
-                    <div>춘식이 <b>외 {{feed.like_count}}명</b>이 좋아합니다.</div>
-                    <div style="font-size: 18px; margin-bottom: 15px;"><b>{{feed.user_id}}</b>
+                    <div><b>{{feed.like_count}}명</b>이 좋아합니다.</div>
+                    <div style="font-size: 18px;margin: 15px 0;"><b>{{feed.user_id}}</b>
                         {{feed.content}}</div>
                     {% for reply in feed.reply_list %}
                     <div><b>{{reply.nickname}}</b> {{reply.reply_content}}</div>
@@ -423,6 +454,67 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 
     <script>
+        $(".ico_bookmark").on('click', function () {
+            $(this).toggleClass("on");
+            let feed_id = $(this).closest(".feedbx").attr('data-feed-id');
+            let is_marked;
+
+            if ($(this).hasClass("on")) {
+                is_marked = true;
+            } else {
+                is_marked = false;
+            }
+
+            $.ajax({
+                url: '/content/bookmark/',
+                data: {
+                    feed_id: feed_id,
+                    is_marked: is_marked,
+                },
+                method: 'post',
+                success: function (data) {
+                    console.log("성공");
+                },
+                error: function (request, status, error) {
+                    console.log('에러');
+                },
+                complete: function () {
+                    console.log("완료");
+                },
+            });
+        });
+
+        $(".ico_like").on('click', function () {
+            $(this).toggleClass("on");
+            let feed_id = $(this).closest(".feedbx").attr('data-feed-id');
+            let is_like;
+
+            if ($(this).hasClass("on")) {
+                is_like = true;
+            } else {
+                is_like = false;
+            }
+
+            $.ajax({
+                url: '/content/like/',
+                data: {
+                    feed_id: feed_id,
+                    is_like: is_like,
+                },
+                method: 'post',
+                success: function (data) {
+                    console.log("성공");
+                },
+                error: function (request, status, error) {
+                    console.log('에러');
+                },
+                complete: function () {
+                    console.log("완료");
+                },
+            });
+        });
+
+
         $(".btn_reply").on('click', function (e) {
             let id = $(this).attr("data-feed-id");
             let reply_id = `reply_${id}`;

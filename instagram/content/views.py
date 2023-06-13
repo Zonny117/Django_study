@@ -19,6 +19,19 @@ class Main(APIView):
         # 이메일 데이터가 없을 경우, None 처리
         email = request.session.get("email", None)
 
+        # 세션에 담겨있는 이메일을 읽어옴
+        # print(f"로그인 이메일 : {email}")
+
+        # 이메일 정보가 없으면 로그인창으로
+        if email is None:
+            return render(request, "user/login.html")
+
+        user = User.objects.filter(email=email).first()
+
+        # 유저정보가 없으면 로그인 창으로
+        if user is None:
+            return render(request, "user/login.html")
+
         for feed in feed_object_list:
             user = User.objects.filter(email=email).first()
             reply_object_list = Reply.objects.filter(feed_id=feed.id)
@@ -33,31 +46,33 @@ class Main(APIView):
                     )
                 )
 
+            like_count = Like.objects.filter(feed_id=feed.id, is_like=True).count()
+
+            is_liked = Like.objects.filter(
+                feed_id=feed.id,
+                email=email,
+                is_like=True,
+            ).exists()
+
+            is_marked = Bookmark.objects.filter(
+                feed_id=feed.id,
+                email=email,
+                is_marked=True,
+            ).exists()
+
             feed_list.append(
                 dict(
                     id=feed.id,
                     image=feed.image,
                     content=feed.content,
-                    like_count=feed.like_count,
+                    like_count=like_count,
                     reply_list=reply_list,
-                    nickname=user.nickname,  # user에서 받아와서 새로고침하면 피드 프로필이 변경됨 에러의심
-                    profile_image=user.profile_image,  # user에서 받아와서 새로고침하면 피드 프로필이 변경됨 에러의심
-                    # 피드 업로드할때 세션 이메일과 매칭되는 유저의 닉네임과 프로필사진도 레코드로 추가해서 db에 저장해야할듯 싶다.
+                    is_liked=is_liked,
+                    is_marked=is_marked,
+                    nickname=feed.nickname,
+                    profile_image=feed.profile_image,
                 )
             )
-
-        # 세션에 담겨있는 이메일을 읽어옴
-        # print(f"로그인 이메일 : {email}")
-
-        # 이메일 정보가 없으면 로그인창으로
-        if email is None:
-            return render(request, "user/login.html")
-
-        user = User.objects.filter(email=email).first()
-
-        # 유저정보가 없으면 로그인 창으로
-        if user is None:
-            return render(request, "user/login.html")
 
         return render(
             request,
@@ -87,11 +102,17 @@ class UploadView(APIView):
         content = request.data.getlist("file")[1]
         email = request.session.get("email", None)
 
+        user = User.objects.filter(email=email).first()
+
+        profile_image = user.profile_image
+        nickname = user.nickname
+
         Feed.objects.create(
             email=email,
             image=image,
             content=content,
-            like_count=0,
+            profile_image=profile_image,
+            nickname=nickname,
         )
 
         return Response(status=200)
@@ -111,11 +132,34 @@ class Profile(APIView):
         if user is None:
             return render(request, "user/login.html")
 
+        feed_list = Feed.objects.filter(email=email).all().order_by("-id")
+
+        # values_list는 특정 데이터를 쿼리셋으로 추출할 수 있다.
+        like_list = list(
+            Like.objects.filter(email=email, is_like=True).values_list(
+                "feed_id", flat=True
+            )
+        )
+
+        # 쿼리셋 __in은 해당 데이터를 포함한 레코드만 추출할 수 있도록 한다.
+        like_feed_list = Feed.objects.filter(id__in=like_list).order_by("-id")
+
+        bookmark_list = list(
+            Bookmark.objects.filter(email=email, is_marked=True).values_list(
+                "feed_id", flat=True
+            )
+        )
+
+        bookmark_feed_list = Feed.objects.filter(id__in=bookmark_list).order_by("-id")
+
         return render(
             request,
             "content/profile.html",
             context=dict(
                 user=user,
+                feed_list=feed_list,
+                like_feed_list=like_feed_list,
+                bookmark_feed_list=bookmark_feed_list,
             ),
         )
 
@@ -132,5 +176,65 @@ class UploadReply(APIView):
             reply_content=reply_content,
             email=email,
         )
+
+        return Response(status=200)
+
+
+class ToggelLike(APIView):
+    def post(self, request):
+        feed_id = request.data.get("feed_id", None)
+        is_like = request.data.get("is_like", True)
+
+        if is_like == "True" or is_like == "true":
+            is_like = True
+        else:
+            is_like = False
+
+        print(is_like)
+
+        email = request.session.get("email", None)
+
+        like = Like.objects.filter(feed_id=feed_id, email=email).first()
+
+        if like:
+            like.is_like = is_like
+            like.save()
+        else:
+            # 댓글 테이블 생성
+            Like.objects.create(
+                feed_id=feed_id,
+                is_like=is_like,
+                email=email,
+            )
+
+        return Response(status=200)
+
+
+class ToggelBookmark(APIView):
+    def post(self, request):
+        feed_id = request.data.get("feed_id", None)
+        is_marked = request.data.get("is_marked", True)
+
+        if is_marked == "True" or is_marked == "true":
+            is_marked = True
+        else:
+            is_marked = False
+
+        print(is_marked)
+
+        email = request.session.get("email", None)
+
+        bookmark = Bookmark.objects.filter(feed_id=feed_id, email=email).first()
+
+        if bookmark:
+            bookmark.is_marked = is_marked
+            bookmark.save()
+        else:
+            # 댓글 테이블 생성
+            Bookmark.objects.create(
+                feed_id=feed_id,
+                is_marked=is_marked,
+                email=email,
+            )
 
         return Response(status=200)
