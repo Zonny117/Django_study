@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:quiz_app/model/quiz.dart';
+import 'package:quiz_app/screen/screen_result.dart';
 import 'package:quiz_app/widget/widget_candidate.dart';
 
 // ignore: must_be_immutable
@@ -46,7 +47,7 @@ class _QuizScreenState extends State<QuizScreen> {
               physics: const NeverScrollableScrollPhysics(),
               loop: false,
               itemBuilder: (context, index) {
-                return _buildQuizCard(widget.quizes.first, width, height);
+                return _buildQuizCard(widget.quizes[index], width, height);
               },
             ),
           ),
@@ -117,6 +118,15 @@ class _QuizScreenState extends State<QuizScreen> {
                       ? null
                       : () {
                           if (_currentIndex == widget.quizes.length - 1) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ResultScreen(
+                                  answers: _answers,
+                                  quizes: widget.quizes,
+                                ),
+                              ),
+                            );
                           } else {
                             _answerState = [false, false, false, false];
                             _currentIndex += 1;
