@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/static/css/upload.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <title>엑셀 업로드</title>
+</head>
+
+<body>
+    <div>엑셀을 업로드 하시오</div>
+    <input id="btn_upload" type="file">
+
+
+    <script>
+        $("#btn_upload").on('change', function () {
+
+            let file = this.files[0]
+            let formData = new FormData()
+
+            formData.append('file', file);
+
+            $.ajax({
+                url: 'upload/',
+                method: 'post',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (data, status) {
+                    console.log(data)
+                },
+                error: function (request, status, err) {
+
+                },
+                complete: function (request, status) {
+
+                },
+            })
+        });
+    </script>
+</body>
+
+</html>
